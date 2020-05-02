@@ -1,0 +1,45 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "SQS Standard Queue",
+	"Resources": {
+		"mainqueue": {
+			"Type": "AWS::SQS::Queue",
+			"Properties": {
+				"DelaySeconds": {
+					"Ref": "DelaySeconds"
+				},
+				"MaximumMessageSize": {
+					"Ref": "MaximumMessageSize"
+				},
+				"MessageRetentionPeriod": {
+					"Ref": "MessageRetentionPeriod"
+				},
+				"ReceiveMessageWaitTimeSeconds": {
+					"Ref": "ReceiveMessageWaitTimeSeconds"
+				},
+				"QueueName": "listq",
+				"KmsMasterKeyId": "alias/aws/sqs",
+				"KmsDataKeyReusePeriodSeconds": "1200",
+				"RedrivePolicy": {
+					"deadLetterTargetArn": {
+						"Fn::GetAtt": ["deadletterq", "Arn"]
+					},
+					"maxReceiveCount": 5
+				},
+				"VisibilityTimeout": {
+					"Ref": "VisibilityTimeout"
+				}
+			}
+		},
+		"deadletterq": {
+			"Type": "AWS::SQS::Queue",
+			"Properties": {
+				"QueueName": "listdlq",
+				"KmsMasterKeyId": "alias/aws/sqs",
+				"KmsDataKeyReusePeriodSeconds": "1200"
+
+			}
+		}
+
+	}
+}
